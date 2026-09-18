@@ -1,0 +1,28 @@
+{
+  "base_url": "https://pravdokapi.jerteh.rs",
+  "tls_certificate_verified": true,
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://pravdokapi.jerteh.rs/health",
+      "tested_at_utc": "2026-09-17T12:44:00+00:00",
+      "authenticated": false,
+      "status_code": 200
+    },
+    {
+      "method": "GET",
+      "url": "https://pravdokapi.jerteh.rs/status",
+      "tested_at_utc": "2026-09-17T12:44:00+00:00",
+      "authenticated": false,
+      "status_code": 401
+    },
+    {
+      "method": "GET",
+      "url": "https://pravdokapi.jerteh.rs/status",
+      "tested_at_utc": "2026-09-17T12:44:00+00:00",
+      "authenticated": true,
+      "status_code": 200
+    }
+  ],
+  "note": "Public connection and authentication checks only. Processing examples were captured in a separate test."
+}

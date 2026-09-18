@@ -1,0 +1,11 @@
+{
+  "source_language": "sr-Cyrl",
+  "target_language": "en",
+  "segments": [
+    {
+      "element_id": "message_1",
+      "text": "Молим вас да потврдите пријем документа до петка.",
+      "policy": "translate"
+    }
+  ]
+}

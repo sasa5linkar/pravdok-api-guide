@@ -1,0 +1,2 @@
+# Preserve saved API responses exactly.
+*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

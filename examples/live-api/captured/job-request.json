@@ -1,0 +1,15 @@
+{
+  "method": "POST",
+  "endpoint": "/v1/document-jobs",
+  "file": "sample-serbian.pdf",
+  "media_type": "application/pdf",
+  "form": {
+    "extraction_mode": "ai",
+    "language_hint": "sr-Cyrl",
+    "source_language": "sr-Cyrl",
+    "target_language": "en",
+    "target_layer_id": "english",
+    "render": "true",
+    "render_mode": "auto"
+  }
+}

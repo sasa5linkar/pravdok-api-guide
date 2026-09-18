@@ -1,0 +1,12 @@
+{
+  "method": "POST",
+  "endpoint": "/ocr",
+  "file": "sample-serbian.png",
+  "media_type": "image/png",
+  "form": {
+    "task": "markdown",
+    "include_markdown": "true",
+    "include_boxes": "false",
+    "include_crops": "false"
+  }
+}

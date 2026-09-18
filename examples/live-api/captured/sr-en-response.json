@@ -1,0 +1,21 @@
+{
+  "source_layer_id": "source",
+  "target_layer": {
+    "layer_id": "target_en",
+    "language": "en",
+    "segments": [
+      {
+        "element_id": "message_1",
+        "text": "Please confirm receipt of the document by Friday.",
+        "policy": "translate",
+        "protected_values": []
+      }
+    ]
+  },
+  "engine": "ollama",
+  "model": "translategemma:latest",
+  "context": {
+    "batch_count": 0,
+    "fallback_count": 0
+  }
+}

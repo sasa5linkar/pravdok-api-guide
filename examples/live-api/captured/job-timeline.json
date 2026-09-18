@@ -1,0 +1,50 @@
+[
+  {
+    "elapsed_seconds": 0.0,
+    "state": "queued",
+    "progress": 5,
+    "current_stage": null,
+    "warning_count": 0,
+    "error_code": null
+  },
+  {
+    "elapsed_seconds": 2.016,
+    "state": "running",
+    "progress": 15,
+    "current_stage": null,
+    "warning_count": 0,
+    "error_code": null
+  },
+  {
+    "elapsed_seconds": 4.016,
+    "state": "running",
+    "progress": 15,
+    "current_stage": null,
+    "warning_count": 0,
+    "error_code": null
+  },
+  {
+    "elapsed_seconds": 6.016,
+    "state": "running",
+    "progress": 30,
+    "current_stage": "analyzed",
+    "warning_count": 0,
+    "error_code": null
+  },
+  {
+    "elapsed_seconds": 8.109,
+    "state": "running",
+    "progress": 60,
+    "current_stage": "translated",
+    "warning_count": 0,
+    "error_code": null
+  },
+  {
+    "elapsed_seconds": 10.125,
+    "state": "completed",
+    "progress": 100,
+    "current_stage": "complete",
+    "warning_count": 0,
+    "error_code": null
+  }
+]

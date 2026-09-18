@@ -1,0 +1,11 @@
+{
+  "text": "Захтев за потврду \n\nИме и презиме: Ана Петровић \n\nМолим вас да потврдите пријем документа. \n\nБрој предмета: DEMO-2026-042 \n\nДатум: 17.09.2026.",
+  "filename": "sample-serbian.png",
+  "content_type": "image/png",
+  "size_bytes": 52148,
+  "engine": "deepseek",
+  "model": "deepseek-ai/DeepSeek-OCR-2",
+  "markdown": "Захтев за потврду \n\nИме и презиме: Ана Петровић \n\nМолим вас да потврдите пријем документа. \n\nБрој предмета: DEMO-2026-042 \n\nДатум: 17.09.2026.",
+  "task": "markdown",
+  "mode": "default"
+}

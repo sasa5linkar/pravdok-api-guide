@@ -1,0 +1,11 @@
+{
+  "source_language": "en",
+  "target_language": "sr-Latn",
+  "segments": [
+    {
+      "element_id": "message_1",
+      "text": "Please send the signed form by Friday.",
+      "policy": "translate"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+  "operation": "document-pipeline",
+  "state": "completed",
+  "options": {
+    "extraction_mode": "ai",
+    "input_kind": "source",
+    "language_hint": "sr-Cyrl",
+    "overwrite_existing_layer": false,
+    "render": true,
+    "render_mode": "auto",
+    "source_content_type": "application/pdf",
+    "source_language": "sr-Cyrl",
+    "source_layer_id": "source",
+    "target_language": "en",
+    "target_layer_id": "english"
+  },
+  "created_at": "2026-09-17T12:10:14.339102+00:00",
+  "updated_at": "2026-09-17T12:10:23.447878+00:00",
+  "started_at": "2026-09-17T12:10:14.917995+00:00",
+  "finished_at": "2026-09-17T12:10:23.447878+00:00",
+  "expires_at": "2026-09-24T12:10:23.447878+00:00",
+  "cancel_requested": false,
+  "current_stage": "complete",
+  "warning_count": 0,
+  "error_code": null,
+  "progress": 100,
+  "artifacts": [
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "analysis.json",
+      "media_type": "application/json",
+      "size": 3920,
+      "sha256": "51cef095cf96a6f591dbbcc0f14f34925c41a7a6392e3223f6ac033ed3b30d9d",
+      "created_at": "2026-09-17T12:10:20.338565+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/analysis.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "checkpoints/analyzed.json",
+      "media_type": "application/json",
+      "size": 228,
+      "sha256": "8c1bc417b490d2e657590c704c33e8140e4a3a1cdcd7f2157f72f907c9309eb7",
+      "created_at": "2026-09-17T12:10:20.432322+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/checkpoints/analyzed.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "checkpoints/complete.json",
+      "media_type": "application/json",
+      "size": 365,
+      "sha256": "94ac53c22a517c3b60ac0ca24c6534380b13616a8743d6f078d1ac17aa55f2df",
+      "created_at": "2026-09-17T12:10:23.376242+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/checkpoints/complete.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "checkpoints/rendered.json",
+      "media_type": "application/json",
+      "size": 491,
+      "sha256": "f05f077c6a8f526a31469f6bc8cae8d46bbe43f387c06133950cd5a623f42812",
+      "created_at": "2026-09-17T12:10:23.209292+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/checkpoints/rendered.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "checkpoints/translated.json",
+      "media_type": "application/json",
+      "size": 481,
+      "sha256": "c4d0b1e326da7177f22e4d4915a5b68dd195bbe47f449d31122783eedb9bce9a",
+      "created_at": "2026-09-17T12:10:22.506161+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/checkpoints/translated.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "document.json",
+      "media_type": "application/json",
+      "size": 6565,
+      "sha256": "aa20683dd2e47852920dd0702fc02d7810f1c4ce9e7bb7dd92ca79135dd394f1",
+      "created_at": "2026-09-17T12:10:23.330817+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/document.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "input/source.bin",
+      "media_type": "application/pdf",
+      "size": 49235,
+      "sha256": "3ec14a84d83246de61934fde7e42c7f55dab05111cfa14a6cda2f28091a11c91",
+      "created_at": "2026-09-17T12:10:14.574241+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/input/source.bin"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "render-diagnostics.json",
+      "media_type": "application/json",
+      "size": 1894,
+      "sha256": "a72dcf9c4a671ff0d8d672aacad9d096e3254f4bab6a16ee06ff8b2d5a042996",
+      "created_at": "2026-09-17T12:10:23.068890+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/render-diagnostics.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "rendered.pdf",
+      "media_type": "application/pdf",
+      "size": 613035,
+      "sha256": "ee3c4de489862bd59bb63582197bfa0f1662da0a1635a4d621c0955412b5de5f",
+      "created_at": "2026-09-17T12:10:22.928034+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/rendered.pdf"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "translated-document.json",
+      "media_type": "application/json",
+      "size": 6565,
+      "sha256": "aa20683dd2e47852920dd0702fc02d7810f1c4ce9e7bb7dd92ca79135dd394f1",
+      "created_at": "2026-09-17T12:10:22.396419+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/translated-document.json"
+    },
+    {
+      "job_id": "job_0h4Rma5RpJCtKomAw5AaJffr",
+      "name": "translation-layer.json",
+      "media_type": "application/json",
+      "size": 840,
+      "sha256": "e86e1ec4f6fea065d9f946b2613a801bf2199ed835e4dcc55e68210a3eee336e",
+      "created_at": "2026-09-17T12:10:22.338015+00:00",
+      "download_url": "/v1/document-jobs/job_0h4Rma5RpJCtKomAw5AaJffr/artifacts/translation-layer.json"
+    }
+  ]
+}

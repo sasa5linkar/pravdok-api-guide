@@ -1,0 +1,21 @@
+{
+  "source_layer_id": "source",
+  "target_layer": {
+    "layer_id": "target_sr-latn",
+    "language": "sr-Latn",
+    "segments": [
+      {
+        "element_id": "message_1",
+        "text": "Molimo vas da pošljete potpisanu formu do petka.",
+        "policy": "translate",
+        "protected_values": []
+      }
+    ]
+  },
+  "engine": "ollama",
+  "model": "translategemma:latest",
+  "context": {
+    "batch_count": 0,
+    "fallback_count": 0
+  }
+}
