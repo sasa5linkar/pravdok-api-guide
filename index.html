@@ -243,6 +243,26 @@
       </details>
     </section>
 
+    <section id="model-selection">
+      <h2>Choose a model for evaluation</h2>
+      <p>Omit model selectors to keep using the current configured defaults. No administrator profile change is needed for an individual request. Every processing request still requires the same bearer token.</p>
+      <div class="table-wrap"><table><thead><tr><th>Endpoint</th><th>Optional selector</th><th>Send as</th></tr></thead><tbody>
+        <tr><td><code>POST /ocr</code></td><td><code>ocr_model</code></td><td>Multipart form field</td></tr>
+        <tr><td><code>POST /v1/documents/analyze</code></td><td><code>ocr_model</code></td><td>Multipart form field</td></tr>
+        <tr><td><code>POST /v1/translations</code></td><td><code>translation_model</code></td><td>Top-level JSON field</td></tr>
+        <tr><td><code>POST /v1/document-jobs</code></td><td><code>ocr_model</code>, <code>translation_model</code></td><td>Multipart form fields</td></tr>
+      </tbody></table></div>
+      <p class="note">Changing models unloads the previous service model and loads the requested model into GPU memory. This adds unload, load, and warm-up time and makes queued work wait longer. Repeated requests for the same model can reuse it. Group tests by model. This option is primarily for evaluating models; use a stable default for production traffic. Omitting the selector after an experiment can switch back to the configured default.</p>
+      <details><summary>Prepared model IDs and request examples</summary>
+        <p>OCR: <code>yasserrmd/Nanonets-OCR2-3B:latest</code>, <code>deepseek-ocr:latest</code>, <code>glm-ocr:latest</code>, <code>deepseek-ai/DeepSeek-OCR-2</code>, <code>baidu/Unlimited-OCR</code>, <code>qwen2.5vl:7b</code>, <code>qwen3.5:4b</code>, <code>PaddlePaddle/PaddleOCR-VL-1.6</code>, <code>dots-studio/dots.ocr</code>.</p>
+        <p>Translation: <code>translategemma:latest</code> (current default), <code>translategemma:12b</code>, <code>qwen3.5:4b</code>, <code>google/madlad400-3b-mt</code>. Candidate quality is experimental. A prepared ID does not guarantee that its weights and runtime are installed on every deployment.</p>
+        <p>Add <code>-F "ocr_model=qwen3.5:4b"</code> to an OCR or analysis curl example. With <code>httpx</code>, add <code>"ocr_model": "qwen3.5:4b"</code> to its <code>data</code> dictionary.</p>
+        <p>For translation, add <code>"translation_model": "translategemma:12b"</code> alongside <code>source_language</code>, <code>target_language</code>, and <code>segments</code> or <code>document</code> in the existing JSON request. For a whole-document job, add both selectors as form fields.</p>
+        <p>The successful result format remains the same. Translation results identify the effective model; durable job <code>options</code> include resolved model IDs. Jobs freeze model settings and weight identity at acceptance and refuse model work if that identity changes. Native-only extraction does not load an OCR model.</p>
+        <p>Unknown, wrong-task, or disabled selectors return HTTP 422. Missing Ollama weights or an unavailable model handoff return HTTP 503. Unprepared candidate snapshots and missing evaluation runtimes return typed readiness errors; a model inference failure returns HTTP 502, and an expired stage returns HTTP 504. Requests never download weights. Operators can disable explicit selectors with <code>OCR_ALLOW_MODEL_SELECTION=0</code>; requests without selectors continue to use defaults.</p>
+      </details>
+    </section>
+
     <section id="ocr">
       <div class="section-head"><span class="section-number">02</span><h2>Get text from a scan</h2></div>
       <p class="lead">Upload a PDF or image and get its text back. Replace <code>scan.pdf</code> with your file. Read the words from the response’s <code>text</code> field.</p>
