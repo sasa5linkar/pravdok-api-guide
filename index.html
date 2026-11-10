@@ -332,7 +332,7 @@
       </details>
       <details><summary>Change the workflow or inspect warnings</summary>
         <p>Omit <em>both</em> language fields to analyze without translation. Add <code>render=false</code> when you only want JSON artifacts. You can also submit existing canonical JSON through <code>document_json</code>, or an analysis ZIP through <code>bundle</code>, instead of <code>file</code>.</p>
-        <p>Review <code>warning_count</code> and download <code>render-diagnostics.json</code> when it is listed in <code>artifacts</code>. Text that cannot fit may leave the original region unchanged. The output is a flattened PDF; review the result before using it.</p>
+        <p>Review <code>warning_count</code> and download <code>render-diagnostics.json</code> when it is listed in <code>artifacts</code>. Text that cannot fit may leave the original region unchanged. The default output is a flattened PDF; use output_format=docx for editable Word text. Review either result before using it.</p>
       </details>
     </section>
 
@@ -412,6 +412,17 @@ Date: 17.09.2026.</pre><p class="note">Job status: <code>completed</code>. Repor
         <p>The uploaded <code>source</code> must be the unchanged file analyzed in step 1. Alternatively send its analysis ZIP as <code>analysis_bundle</code>; do not send both. <code>auto</code> uses replacement when matching source or verified backgrounds for every page are available, and reconstruction otherwise.</p>
         <p>Check <code>X-Document-Status</code> and <code>X-Document-Warnings</code>. Use <code>response_format=bundle</code> to receive a ZIP with <code>rendered.pdf</code>, <code>document.json</code>, and <code>diagnostics.json</code>.</p>
       </details>
+      <details id="docx-output"><summary>Editable Word output and before/after comparisons</summary>
+        <p>For <code>POST /v1/documents/render</code>, set <code>response_format=docx</code>, select <code>layer_id=source</code> for the original text or your translated layer for English, and use <code>render_mode=auto</code> or <code>reconstruct</code>. Omit <code>source</code> and <code>analysis_bundle</code>; these and <code>replace</code> are rejected for DOCX. Authentication and JSON/layer fields are the same as the PDF call.</p>
+        <pre><code>curl --fail-with-body "$base/v1/documents/render" \
+  -H "Authorization: Bearer $OCR_API_TOKEN" \
+  -F "document_json=&lt;document.json" \
+  -F "layer_id=source" -F "response_format=docx" \
+  -o source.docx</code></pre>
+        <p>For translated output, use <code>layer_id=english</code> and pass the nested translated layer as <code>layer_json</code>, or use canonical JSON that already contains that layer. Export the source and translated layers separately to compare before and after. The response filename is <code>rendered-document.docx</code> and MIME type is <code>application/vnd.openxmlformats-officedocument.wordprocessingml.document</code>. The output limit is 128 MiB. Check the same <code>X-Document-Status</code>, <code>X-Document-Warnings</code>, and <code>X-Document-Warning-Codes</code> headers as for PDF.</p>
+        <p>Queued jobs accept <code>output_format=docx</code> and publish <code>rendered.docx</code> plus <code>render-diagnostics.json</code>, with integrity-checked checkpoints. The default remains <code>output_format=pdf</code>. DOCX jobs support <code>auto</code>/<code>reconstruct</code>; <code>replace</code> is rejected.</p>
+        <p>Word output contains editable text reflowed onto A4 pages with source page breaks, approximate horizontal indents, and available font sizes normalized to A4. Diagnostic-only OCR elements are excluded; missing selected text layers are errors. Figures, shapes, and table geometry are omitted with warnings. Word pagination and scan positions can differ; estimated font sizes do not recover the original typeface. Uncertain text-to-region matches remain in reading flow with a warning. PDF remains the default and <code>response_format=bundle</code> still returns a PDF bundle.</p>
+      </details>
     </section>
 
     <section id="reference">
@@ -421,7 +432,7 @@ Date: 17.09.2026.</pre><p class="note">Job status: <code>completed</code>. Repor
         <tr><td><span class="method">POST</span> <a href="#ocr"><code>/ocr</code></a></td><td>Multipart <code>file</code></td><td>Text / Markdown JSON</td></tr>
         <tr><td><span class="method">POST</span> <a href="#analyze-stage"><code>/v1/documents/analyze</code></a></td><td>Multipart <code>file</code></td><td>Document JSON / analysis ZIP</td></tr>
         <tr><td><span class="method">POST</span> <a href="#translate"><code>/v1/translations</code></a></td><td>JSON: languages + <code>segments</code> or <code>document</code></td><td>Translation layer + metadata</td></tr>
-        <tr><td><span class="method">POST</span> <a href="#render-stage"><code>/v1/documents/render</code></a></td><td>Multipart <code>document_json</code> + <code>layer_id</code></td><td>PDF / render ZIP</td></tr>
+        <tr><td><span class="method">POST</span> <a href="#render-stage"><code>/v1/documents/render</code></a></td><td>Multipart <code>document_json</code> + <code>layer_id</code>; <code>response_format=pdf|docx|bundle</code></td><td>PDF / editable DOCX / PDF render ZIP</td></tr>
         <tr><td><span class="method">POST</span> <a href="#document"><code>/v1/document-jobs</code></a></td><td>Multipart <code>file</code>, <code>document_json</code>, or <code>bundle</code></td><td>202 + job ID</td></tr>
         <tr><td><span class="method">GET</span> <code>/v1/document-jobs/{id}</code></td><td>Job ID in path</td><td>State, estimated progress, artifacts</td></tr>
         <tr><td><span class="method">GET</span> <code>/v1/document-jobs/{id}/artifacts/{name}</code></td><td>Use the artifact’s <code>download_url</code></td><td>File bytes + SHA-256 header</td></tr>
