@@ -414,6 +414,7 @@ Date: 17.09.2026.</pre><p class="note">Job status: <code>completed</code>. Repor
         <p>Check <code>X-Document-Status</code> and <code>X-Document-Warnings</code>. Use <code>response_format=bundle</code> to receive a ZIP with <code>rendered.pdf</code>, <code>document.json</code>, and <code>diagnostics.json</code>.</p>
       </details>
       <details id="docx-output"><summary>Editable Word output and before/after comparisons</summary>
+        <p>Native Qwen paragraph/style reconstruction with independently positioned Word paragraphs is an offline experiment. It is not enabled by the API and has no request selector.</p>
         <p>For <code>POST /v1/documents/render</code>, set <code>response_format=docx</code>, select <code>layer_id=source</code> for the original text or your translated layer for English, and use <code>render_mode=auto</code> or <code>reconstruct</code>. Omit <code>source</code> and <code>analysis_bundle</code>; these and <code>replace</code> are rejected for DOCX. Authentication and JSON/layer fields are the same as the PDF call.</p>
         <pre><code>curl --fail-with-body "$base/v1/documents/render" \
   -H "Authorization: Bearer $OCR_API_TOKEN" \
