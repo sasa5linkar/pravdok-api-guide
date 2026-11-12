@@ -245,6 +245,7 @@
 
     <section id="model-selection">
       <h2>Choose a model for evaluation</h2>
+      <p>The workstation's main OCR model is local <code>qwen3.5:4b</code>. Its default OCR prompt transcribes printed text in the original language without translation and requests omission of handwriting, signatures, stamps, seals, photographs, and illustrations. These exclusions are best effort. Deployment configuration can override the model; translation continues to use <code>translategemma:latest</code>.</p>
       <p>Omit model selectors to keep using the current configured defaults. No administrator profile change is needed for an individual request. Every processing request still requires the same bearer token.</p>
       <div class="table-wrap"><table><thead><tr><th>Endpoint</th><th>Optional selector</th><th>Send as</th></tr></thead><tbody>
         <tr><td><code>POST /ocr</code></td><td><code>ocr_model</code></td><td>Multipart form field</td></tr>
