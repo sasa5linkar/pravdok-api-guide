@@ -245,7 +245,7 @@
 
     <section id="model-selection">
       <h2>Choose a model for evaluation</h2>
-      <p>The workstation's main OCR model is local <code>qwen3.5:4b</code>. Its default OCR prompt transcribes printed text in the original language without translation and requests omission of handwriting, signatures, stamps, seals, photographs, and illustrations. These exclusions are best effort. Deployment configuration can override the model; translation continues to use <code>translategemma:latest</code>.</p>
+      <p>The workstation's configured OCR model is local <code>qwen3.5:9b</code>. Its default OCR prompt transcribes printed text in the original language without translation and requests omission of handwriting, signatures, stamps, seals, photographs, and illustrations. These exclusions are best effort. Deployment configuration can override the model; translation continues to use <code>translategemma:latest</code>.</p>
       <p>Omit model selectors to keep using the current configured defaults. No administrator profile change is needed for an individual request. Every processing request still requires the same bearer token.</p>
       <div class="table-wrap"><table><thead><tr><th>Endpoint</th><th>Optional selector</th><th>Send as</th></tr></thead><tbody>
         <tr><td><code>POST /ocr</code></td><td><code>ocr_model</code></td><td>Multipart form field</td></tr>
@@ -412,6 +412,28 @@ Date: 17.09.2026.</pre><p class="note">Job status: <code>completed</code>. Repor
         <div data-example="render" data-caption="POST /v1/documents/render"></div>
         <p>The uploaded <code>source</code> must be the unchanged file analyzed in step 1. Alternatively send its analysis ZIP as <code>analysis_bundle</code>; do not send both. <code>auto</code> uses replacement when matching source or verified backgrounds for every page are available, and reconstruction otherwise.</p>
         <p>Check <code>X-Document-Status</code> and <code>X-Document-Warnings</code>. Use <code>response_format=bundle</code> to receive a ZIP with <code>rendered.pdf</code>, <code>document.json</code>, and <code>diagnostics.json</code>.</p>
+      </details>
+      <details id="word-workflow"><summary>PDF → Serbian Word → optional English Word</summary>
+        <p>Use <code>POST /v1/document-jobs</code> with <code>workflow=serbian_word</code>. A PDF produces <code>serbian.docx</code>. Add <code>target_language=en</code> to automatically translate that exact Word file into <code>english.docx</code>. Editing is optional; there is no mandatory review pause.</p>
+        <p>To correct the Serbian text or formatting first, request Serbian only, edit the downloaded Word file, then upload the corrected DOCX as a new job with the same workflow and English target. Its current text and Word template are authoritative. The uploaded bytes are kept unchanged as <code>serbian.docx</code>; no OCR or native re-analysis is performed on that Word upload.</p>
+        <pre><code># Both languages automatically; replace form.pdf with your PDF path.
+curl --fail-with-body "$base/v1/document-jobs" \
+  -H "Authorization: Bearer $OCR_API_TOKEN" \
+  -F "workflow=serbian_word" \
+  -F "file=@form.pdf;type=application/pdf" \
+  -F "target_language=en" -o word-job.json
+
+# Optional correction path: upload the Word file after your edits.
+curl --fail-with-body "$base/v1/document-jobs" \
+  -H "Authorization: Bearer $OCR_API_TOKEN" \
+  -F "workflow=serbian_word" \
+  -F "file=@corrected-serbian.docx;type=application/vnd.openxmlformats-officedocument.wordprocessingml.document" \
+  -F "target_language=en" -o corrected-word-job.json</code></pre>
+        <p>Use <code>curl.exe</code> on Windows. Omit <code>target_language</code> for Serbian only. <code>source_language</code> defaults to <code>sr</code>; <code>sr-Cyrl</code> and <code>sr-Latn</code> are also supported. Optional <code>ocr_model</code>/<code>translation_model</code> selectors and authentication are the same as other jobs. OCR options apply to PDF inputs only. This workflow always produces DOCX, overriding the ordinary <code>output_format=pdf</code> default. It requires <code>render=true</code> and rejects <code>replace</code>, canonical JSON/bundles and layer controls.</p>
+        <p>Poll the returned job ID using the existing status endpoint. Download <code>serbian.docx</code> and, when requested and validated, <code>english.docx</code> from its <code>artifacts</code>. <code>word-source-diagnostics.json</code> records the first Word export. <code>word-translation.json</code> and <code>word-diagnostics.json</code> identify the exact Serbian Word SHA-256, translation/model and real rendered page counts. Each edited upload is a separate job, so use that new job's English output.</p>
+        <p>English keeps the Serbian Word paragraph styles, fonts, sizes, emphasis, numbering, headers/footers, notes, tables, hyperlinks and field codes. Ordinary paragraphs translate as a whole; mixed formatting uses spans with paragraph context. Comments and text inside images remain unchanged. Table rows may grow and pagination may change. Font sizes are not reduced to hide overflow.</p>
+        <p>Uploads retain the 25 MiB limit. Word translation additionally limits story XML to 16 MiB, with existing translation text/segment limits. Accept tracked changes before requesting English. Bound controls, fixed text boxes and DrawingML text require separate review and are rejected before translation. Local Word-to-PDF checks detect missing target characters, off-page text and overlaps. If Word input or English layout validation fails, the job fails, <code>serbian.docx</code> stays downloadable, <code>word-diagnostics.json</code> explains the input problem or render counts, and English is withheld. Check the artifact list even on failure. These checks do not certify translation meaning or exact scan reconstruction.</p>
+        <p>Requests without this workflow keep the existing canonical JSON/PDF behavior. The workflow uses the current API OCR and Word renderer; the offline native-Qwen layout experiment remains separate.</p>
       </details>
       <details id="docx-output"><summary>Editable Word output and before/after comparisons</summary>
         <p>Native Qwen paragraph/style reconstruction with independently positioned Word paragraphs is an offline experiment. It is not enabled by the API and has no request selector.</p>
