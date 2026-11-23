@@ -46,7 +46,7 @@
     .hero-art { width:100%; max-width:430px; justify-self:end; }
     .hero-art svg { display:block; width:100%; height:auto; }
     .hero-art figcaption { font-size:11px; text-align:center; color:var(--muted); margin-top:2px; }
-    .choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .choices { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
     .choice { background:var(--white); border:1px solid var(--line); border-radius:12px; padding:23px; color:var(--ink); text-decoration:none; transition:border-color .15s,transform .15s; }
     .choice:hover { border-color:var(--green); transform:translateY(-2px); }
     .choice .number { font-size:12px; color:var(--green); display:block; margin-bottom:15px; }
@@ -141,31 +141,28 @@
   </style>
 </head>
 <body>
-  <p class="note">Troubleshooting: include the <code>X-OCR-Request-ID</code> response header when reporting an API error. It links your request to server diagnostics. Never share your bearer token. The authenticated <code>/status</code> response also includes diagnostic log-writer health.</p>
   <a class="skip" href="#main">Skip to guide</a>
   <aside class="rail" aria-label="Guide navigation">
     <a class="brand" href="#main"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5M7 9h10M7 13h10M7 17h6"/></svg></span>OCR API</a>
     <p class="rail-label">A practical guide</p>
     <nav>
       <a href="#start"><span>01</span>Start here</a>
-      <a href="#ocr"><span>02</span>Extract text</a>
-      <a href="#translate"><span>03</span>Translate text</a>
-      <a href="#document"><span>04</span>Translate a file</a>
-      <a href="#worked-examples"><span>↳</span>Actual examples</a>
-      <a href="#stages"><span>05</span>Work step by step</a>
-      <a href="#reference"><span>06</span>All API calls</a>
-      <a href="#help"><span>07</span>Quick answers</a>
+      <a href="#ocr-docx"><span>02</span>OCR → Serbian Word</a>
+      <a href="#english-docx"><span>03</span>Word → English</a>
+      <a href="#word-results"><span>04</span>Wait &amp; download</a>
+      <a href="#supplementary"><span>+</span>Supplementary</a>
+      <a href="#help"><span>?</span>Quick answers</a>
     </nav>
-    <div class="rail-foot">Keep this guide beside your code.<a href="#start">Connection setup ↗</a><a href="#reference">API call reference</a></div>
+    <div class="rail-foot">Keep this guide beside your code.<a href="#supplementary">Supplementary tools and reference ↗</a><a href="#reference">API call reference</a></div>
   </aside>
   <main id="main">
-    <div class="topline"><span>DOCUMENT PROCESSING / API GUIDE</span><a href="#start">Connection setup ↗</a></div>
+    <div class="topline"><span>DOCUMENT PROCESSING / API GUIDE</span><a href="#ocr-docx">OCR and Word translation →</a></div>
     <header class="hero">
       <div>
         <div class="eyebrow">OCR + Serbian–English translation</div>
         <h1>Read documents.<br><em>Translate them.</em></h1>
-        <p>Turn scans into text, translate between Serbian and English, and create a translated PDF. Start with the recipe that fits your task.</p>
-        <p class="small"><a href="#start">Connect to the API →</a> · <a href="#worked-examples">See real inputs and results →</a></p>
+        <p>Create editable Serbian Word documents from scans, then translate Serbian Word into English. Two document workflows; correction before translation is optional.</p>
+        <p class="small"><a href="#start">Connect to the API →</a> · <a href="#supplementary">Supplementary examples and reference →</a></p>
       </div>
       <figure class="hero-art">
         <svg viewBox="0 0 440 295" role="img" aria-labelledby="flow-title flow-desc">
@@ -200,19 +197,18 @@
       </figure>
     </header>
 
-    <div class="choices" aria-label="Choose your task">
-      <a class="choice" href="#ocr"><span class="number">01 / OCR</span><h3>I need the text</h3><p>A scan, photo, or PDF → text and Markdown.</p><span class="go">Extract text →</span></a>
-      <a class="choice" href="#translate"><span class="number">02 / TRANSLATION</span><h3>I have text to translate</h3><p>Serbian ↔ English, with no file upload.</p><span class="go">Translate text →</span></a>
-      <a class="choice" href="#document"><span class="number">03 / WHOLE DOCUMENT</span><h3>I need a translated PDF</h3><p>Upload a file, track the job, download the result.</p><span class="go">Translate a file →</span></a>
+    <div class="choices" aria-label="Two customer document workflows">
+      <a class="choice" href="#ocr-docx"><span class="number">01 / OCR</span><h3>Scans → Serbian DOCX</h3><p>PDF, image or ordered page images → one editable Word document.</p><span class="go">Create Serbian Word →</span></a>
+      <a class="choice" href="#english-docx"><span class="number">02 / TRANSLATION</span><h3>Serbian DOCX → English DOCX</h3><p>Translate the generated or optionally corrected Word file.</p><span class="go">Create English Word →</span></a>
     </div>
 
     <section id="start">
       <div class="section-head"><span class="section-number">01</span><h2>Start here</h2></div>
       <p class="lead">You need the API address below and an access token from the API operator. Copy the setup once, then choose an OCR or translation recipe.</p>
       <div class="setup-grid">
-        <div class="setup-item"><strong>1 · Use this address</strong><p><code>https://pravdokapi.jerteh.rs</code><br>This is the base URL. Each recipe adds its own path, such as <code>/ocr</code>.</p></div>
+        <div class="setup-item"><strong>1 · Use this address</strong><p><code>https://pravdokapi.jerteh.rs</code><br>This is the base URL. Both document workflows use <code>/v1/document-jobs</code>.</p></div>
         <div class="setup-item"><strong>2 · Add your token</strong><p>Replace <code>&lt;your token&gt;</code> in setup. The examples send it in the <code>Authorization</code> header.</p></div>
-        <div class="setup-item"><strong>3 · Choose a recipe</strong><p><a href="#ocr">Read a scan</a>, <a href="#translate">translate text</a>, or <a href="#document">translate a file</a>. Replace the sample file or text with yours.</p></div>
+        <div class="setup-item"><strong>3 · Choose a recipe</strong><p><a href="#ocr-docx">Create Serbian Word</a> or <a href="#english-docx">translate Word into English</a>. Replace the sample filename with yours.</p></div>
       </div>
       <p class="note"><strong>Quick connection check:</strong> open <a href="https://pravdokapi.jerteh.rs/health">the health link</a>. No token is needed. A working connection returns <code>{"status":"ok","service":"ocr-api"}</code>.</p>
       <fieldset class="language-picker" id="language-picker">
@@ -233,16 +229,43 @@
         <p>These checks passed at the public address on 17 September 2026, 12:44 UTC. They confirm connection and authentication; the saved OCR and translation examples below come from a separate processing test. <a href="examples/live-api/public-endpoint-check.json">View the check record</a>.</p>
         <p>Opening <code>/status</code> in a browser does not send your token. Use the setup example above. Keep the base URL as <code>https://pravdokapi.jerteh.rs</code>; add <code>/status</code> only when making that request.</p>
       </details>
-      <details><summary>Which files can I send?</summary>
-        <div class="table-wrap"><table><thead><tr><th>Task</th><th>Supported input</th><th>What to know</th></tr></thead><tbody>
-          <tr><td>Quick OCR</td><td>PDF, PNG, JPEG, TIFF, BMP, WebP</td><td>Use <code>/ocr</code>. Original uploads: up to 25 MiB.</td></tr>
-          <tr><td>Document analysis / jobs</td><td>All of the above, plus DOCX and DOC</td><td>PDFs: up to 25 pages. Large images have additional pixel limits.</td></tr>
-          <tr><td>Text translation</td><td>Text segments or analyzed document JSON</td><td>English ↔ Serbian. Use UTF-8 for Serbian characters.</td></tr>
-        </tbody></table></div>
-        <p>Examples name PDF files explicitly. If you upload a different format, change both the filename and its MIME type: <code>image/png</code> for PNG, <code>image/jpeg</code> for JPEG, <code>application/msword</code> for DOC, or <code>application/vnd.openxmlformats-officedocument.wordprocessingml.document</code> for DOCX.</p>
+      <details><summary>Supported files and practical limits</summary>
+        <p>OCR accepts a PDF, PNG, JPEG, TIFF, BMP or WebP. Send one file with <code>file</code>, or several scanned images with repeated <code>files</code> fields. One ordered image set produces one DOCX; TIFF frames retain their order.</p>
+        <p>Translation accepts a Serbian DOCX. Original uploads are limited to 25 MiB total per job; OCR supports up to 25 pages, with additional image pixel limits. Split larger documents into separate jobs.</p>
       </details>
     </section>
-
+    <span id="word-workflow"></span>
+    <section id="ocr-docx">
+      <div class="section-head"><span class="section-number">02</span><h2>OCR: scans to Serbian Word</h2></div>
+      <p class="lead">Upload a Serbian PDF or scanned image and receive an editable <code>serbian.docx</code>. OCR keeps the source wording and Cyrillic or Latin script; it does not translate the source.</p>
+      <div data-example="wordOcr" data-caption="Create a Serbian DOCX from a PDF or image"></div>
+      <p>Replace <code>form.pdf</code> with your PDF. For a single image, use its filename and MIME type, for example <code>file=@page.png;type=image/png</code>. Keep <code>workflow=serbian_word</code>; no model or JSON-layout choices are needed.</p>
+      <details><summary>Several scanned images → one DOCX</summary>
+        <p>Send repeated <code>files</code> fields in page order. Use <code>files</code> instead of <code>file</code>; do not mix them. Only images are accepted in this list. The server retains the original images and an order/hash manifest.</p>
+        <div data-example="wordImages" data-caption="Ordered page images → one Serbian DOCX"></div>
+      </details>
+      <p>Next, <a href="#word-results">wait for the job and download Serbian Word</a>. Review OCR and estimated formatting. Handwriting, stamps and seals are omitted on a best-effort basis.</p>
+      <p class="note"><strong>Want English automatically too?</strong> Add <code>target_language=en</code> to this same request. The API creates Serbian Word first, then translates that exact file into English. Editing is optional.</p>
+    </section>
+    <section id="english-docx">
+      <div class="section-head"><span class="section-number">03</span><h2>Translate Serbian Word into English</h2></div>
+      <p class="lead">Upload a Serbian DOCX and receive <code>english.docx</code>. Use the OCR-produced file directly, or edit its text and formatting first. The API translates the current Word file without running OCR again.</p>
+      <div data-example="wordEnglish" data-caption="Serbian DOCX → English DOCX"></div>
+      <p>Replace <code>serbian.docx</code> with your file. The source is Serbian and the target is English. The uploaded Word file remains available as <code>serbian.docx</code>; English inherits its paragraph styles, font sizes, emphasis, numbering and supported document structure.</p>
+      <p>Next, <a href="#word-results">wait for the job and download English Word</a>. English may wrap differently or need more pages. Unsafe overflow is reported; the Serbian file stays available if English generation fails.</p>
+      <p class="small">Accept tracked changes before requesting translation. Fixed text boxes and some complex Word objects require separate review. <a href="#word-workflow-reference">Detailed Word support and diagnostics</a>.</p>
+    </section>
+    <section id="word-results">
+      <div class="section-head"><span class="section-number">04</span><h2>Wait and download your Word files</h2></div>
+      <p>Both workflows return <code>202 Accepted</code> and a <code>job_id</code>. Continue in the same terminal or Python session. Poll until the job finishes; a client timeout does not cancel it.</p>
+      <div data-example="wordPoll" data-caption="Wait for the OCR or translation job"></div>
+      <p><code>completed</code> and <code>completed_with_warnings</code> are success states. Review warnings. On <code>failed</code>, inspect the artifact list: Serbian Word may still be downloadable. English is listed only after its validation checkpoint succeeds.</p>
+      <details open><summary>Download Serbian Word</summary><div data-example="wordDownloadSr" data-caption="Download serbian.docx and verify its checksum"></div></details>
+      <details><summary>Download English Word, when requested</summary><div data-example="wordDownloadEn" data-caption="Download english.docx and verify its checksum"></div></details>
+      <p>Keep the same bearer token for downloads and save the files before the job expires. OCR and automatic translation still need review; layout checks do not certify meaning.</p>
+    </section>
+    <details id="supplementary" class="supplementary"><summary>Supplementary: testing, legacy outputs and low-level API reference</summary>
+      <p>The two workflows above are the customer document interface. The calls below remain available for compatibility, integrations, evaluation and operators. Model switching, raw text/Markdown, JSON analysis, PDF rendering and maintenance are supplementary.</p>
     <section id="model-selection">
       <h2>Choose a model for evaluation</h2>
       <p>The workstation's configured OCR model is local <code>qwen3.5:9b</code>. Its default OCR prompt transcribes printed text in the original language without translation and requests omission of handwriting, signatures, stamps, seals, photographs, and illustrations. These exclusions are best effort. Deployment configuration can override the model; translation continues to use <code>translategemma:latest</code>.</p>
@@ -263,9 +286,8 @@
         <p>Unknown, wrong-task, or disabled selectors return HTTP 422. Missing Ollama weights or an unavailable model handoff return HTTP 503. Unprepared candidate snapshots and missing evaluation runtimes return typed readiness errors; a model inference failure returns HTTP 502, and an expired stage returns HTTP 504. Requests never download weights. Operators can disable explicit selectors with <code>OCR_ALLOW_MODEL_SELECTION=0</code>; requests without selectors continue to use defaults.</p>
       </details>
     </section>
-
     <section id="ocr">
-      <div class="section-head"><span class="section-number">02</span><h2>Get text from a scan</h2></div>
+      <div class="section-head"><span class="section-number">SUPPLEMENT · 02</span><h2>Get text from a scan</h2></div>
       <p class="lead">Upload a PDF or image and get its text back. Replace <code>scan.pdf</code> with your file. Read the words from the response’s <code>text</code> field.</p>
       <div class="endpoint"><span class="method">POST</span><span>/ocr</span><span class="small">multipart form · returns JSON</span></div>
       <div class="two-col">
@@ -287,9 +309,8 @@
         <p>Send boolean form values as <code>true</code> or <code>false</code>. Leave <code>task=markdown</code>, <code>mode=default</code>, and the prompt unchanged for the common case. Need structured pages and element IDs for translation or rendering? Use <a href="#stages">document analysis</a>.</p>
       </details>
     </section>
-
     <section id="translate">
-      <div class="section-head"><span class="section-number">03</span><h2>Translate text you already have</h2></div>
+      <div class="section-head"><span class="section-number">SUPPLEMENT · 03</span><h2>Translate text you already have</h2></div>
       <p class="lead">Replace <code>Добар дан.</code> with your text and choose the source and target languages. The example prints the translation. In the JSON response, find it under <code>target_layer.segments</code>.</p>
       <div class="endpoint"><span class="method">POST</span><span>/v1/translations</span><span class="small">JSON body · returns a translation layer</span></div>
       <div class="two-col">
@@ -310,9 +331,8 @@
         <p>A request can contain up to 5,000 segments and 1,000,000 source characters. Keep each segment to translate under 24,000 characters. Supported directions are English → Serbian and Serbian → English.</p>
       </details>
     </section>
-
     <section id="document">
-      <div class="section-head"><span class="section-number">04</span><h2>Translate a whole document</h2></div>
+      <div class="section-head"><span class="section-number">SUPPLEMENT · 04</span><h2>Translate a whole document</h2></div>
       <p class="lead">Upload your file, wait for the job to finish, then download the translated PDF. This recipe reads the document and translates it in one request.</p>
       <div class="pipeline" aria-label="Document translation workflow">
         <div class="pipeline-item"><span>01 / input</span><strong>Your document</strong><small>PDF, image, DOCX, DOC</small></div><span class="pipeline-arrow" aria-hidden="true">→</span>
@@ -336,9 +356,8 @@
         <p>Review <code>warning_count</code> and download <code>render-diagnostics.json</code> when it is listed in <code>artifacts</code>. Text that cannot fit may leave the original region unchanged. The default output is a flattened PDF; use output_format=docx for editable Word text. Review either result before using it.</p>
       </details>
     </section>
-
     <section id="worked-examples">
-      <div class="section-head"><span class="section-number">TRY IT</span><h2>Real inputs and results</h2></div>
+      <div class="section-head"><span class="section-number">SUPPLEMENT · TRY IT</span><h2>Real inputs and results</h2></div>
       <p class="lead">These examples were actually run using a fictional Serbian form. Open one to compare the input with the saved response, or download the files and try them yourself.</p>
       <p class="small">Processing test recorded on 17 September 2026 at 12:08 UTC. These are saved examples; your job IDs and results will differ.</p>
       <div class="table-wrap"><table><thead><tr><th>Example</th><th>Observed result</th><th>Elapsed</th></tr></thead><tbody>
@@ -392,9 +411,8 @@ Date: 17.09.2026.</pre><p class="note">Job status: <code>completed</code>. Repor
         <div class="evidence-links"><a href="examples/live-api/run_examples.py">View the example script</a><a href="examples/live-api/README.md">Example pack instructions</a></div>
       </details>
     </section>
-
     <section id="stages">
-      <div class="section-head"><span class="section-number">05</span><h2>Need more control? Call each stage.</h2></div>
+      <div class="section-head"><span class="section-number">SUPPLEMENT · 05</span><h2>Need more control? Call each stage.</h2></div>
       <p class="lead">Use separate calls to inspect extracted text, choose what to translate, or render a particular language. Follow these three steps in the same session.</p>
       <details id="analyze-stage"><summary>1 · Analyze a file → document.json</summary>
         <p>Returns structured document JSON with pages, text, boxes, and stable element IDs. This is the input expected by the following document-translation and rendering calls.</p>
@@ -413,8 +431,8 @@ Date: 17.09.2026.</pre><p class="note">Job status: <code>completed</code>. Repor
         <p>The uploaded <code>source</code> must be the unchanged file analyzed in step 1. Alternatively send its analysis ZIP as <code>analysis_bundle</code>; do not send both. <code>auto</code> uses replacement when matching source or verified backgrounds for every page are available, and reconstruction otherwise.</p>
         <p>Check <code>X-Document-Status</code> and <code>X-Document-Warnings</code>. Use <code>response_format=bundle</code> to receive a ZIP with <code>rendered.pdf</code>, <code>document.json</code>, and <code>diagnostics.json</code>.</p>
       </details>
-      <details id="word-workflow"><summary>PDF → Serbian Word → optional English Word</summary>
-        <p>Use <code>POST /v1/document-jobs</code> with <code>workflow=serbian_word</code>. A PDF produces <code>serbian.docx</code>. Add <code>target_language=en</code> to automatically translate that exact Word file into <code>english.docx</code>. Editing is optional; there is no mandatory review pause.</p>
+      <details id="word-workflow-reference"><summary>PDF → Serbian Word → optional English Word</summary>
+        <p>Use <code>POST /v1/document-jobs</code> with <code>workflow=serbian_word</code>. A PDF, supported image or ordered image set produces <code>serbian.docx</code>. Add <code>target_language=en</code> to automatically translate that exact Word file into <code>english.docx</code>. Editing is optional; there is no mandatory review pause.</p>
         <p>To correct the Serbian text or formatting first, request Serbian only, edit the downloaded Word file, then upload the corrected DOCX as a new job with the same workflow and English target. Its current text and Word template are authoritative. The uploaded bytes are kept unchanged as <code>serbian.docx</code>; no OCR or native re-analysis is performed on that Word upload.</p>
         <pre><code># Both languages automatically; replace form.pdf with your PDF path.
 curl --fail-with-body "$base/v1/document-jobs" \
@@ -429,7 +447,7 @@ curl --fail-with-body "$base/v1/document-jobs" \
   -F "workflow=serbian_word" \
   -F "file=@corrected-serbian.docx;type=application/vnd.openxmlformats-officedocument.wordprocessingml.document" \
   -F "target_language=en" -o corrected-word-job.json</code></pre>
-        <p>Use <code>curl.exe</code> on Windows. Omit <code>target_language</code> for Serbian only. <code>source_language</code> defaults to <code>sr</code>; <code>sr-Cyrl</code> and <code>sr-Latn</code> are also supported. Optional <code>ocr_model</code>/<code>translation_model</code> selectors and authentication are the same as other jobs. OCR options apply to PDF inputs only. This workflow always produces DOCX, overriding the ordinary <code>output_format=pdf</code> default. It requires <code>render=true</code> and rejects <code>replace</code>, canonical JSON/bundles and layer controls.</p>
+        <p>Use <code>curl.exe</code> on Windows. Omit <code>target_language</code> for Serbian only. <code>source_language</code> defaults to <code>sr</code>; <code>sr-Cyrl</code> and <code>sr-Latn</code> are also supported. Optional <code>ocr_model</code>/<code>translation_model</code> selectors and authentication are the same as other jobs. OCR options apply to PDF inputs only. For an image series use repeated <code>files</code> fields instead of <code>file</code>; total upload size is 25 MiB and total page count is 25, including TIFF frames. Original images and an order/hash manifest are retained. This workflow always produces DOCX, overriding the ordinary <code>output_format=pdf</code> default. It requires <code>render=true</code> and rejects <code>replace</code>, canonical JSON/bundles and layer controls.</p>
         <p>Poll the returned job ID using the existing status endpoint. Download <code>serbian.docx</code> and, when requested and validated, <code>english.docx</code> from its <code>artifacts</code>. <code>word-source-diagnostics.json</code> records the first Word export. <code>word-translation.json</code> and <code>word-diagnostics.json</code> identify the exact Serbian Word SHA-256, translation/model and real rendered page counts. Each edited upload is a separate job, so use that new job's English output.</p>
         <p>English keeps the Serbian Word paragraph styles, fonts, sizes, emphasis, numbering, headers/footers, notes, tables, hyperlinks and field codes. Ordinary paragraphs translate as a whole; mixed formatting uses spans with paragraph context. Comments and text inside images remain unchanged. Table rows may grow and pagination may change. Font sizes are not reduced to hide overflow.</p>
         <p>Uploads retain the 25 MiB limit. Word translation additionally limits story XML to 16 MiB, with existing translation text/segment limits. Accept tracked changes before requesting English. Bound controls, fixed text boxes and DrawingML text require separate review and are rejected before translation. Local Word-to-PDF checks detect missing target characters, off-page text and overlaps. If Word input or English layout validation fails, the job fails, <code>serbian.docx</code> stays downloadable, <code>word-diagnostics.json</code> explains the input problem or render counts, and English is withheld. Check the artifact list even on failure. These checks do not certify translation meaning or exact scan reconstruction.</p>
@@ -449,9 +467,8 @@ curl --fail-with-body "$base/v1/document-jobs" \
         <p>Word output contains editable text on A4 pages with source page breaks, estimated alignment/vertical spacing, and font sizes normalized to A4. Fully matched pages passing conservative fit and overlap checks use editable page-positioned frames. Other pages retain reading flow without shortening text to fit boxes. Diagnostic-only OCR elements are excluded; missing selected text layers are errors. Figures, shapes, and table geometry are omitted with warnings. Word pagination and scan positions can differ; estimated sizes do not recover the original typeface. Uncertain matches and positions displaced by flowing text are reported in diagnostics. PDF remains the default and <code>response_format=bundle</code> still returns a PDF bundle.</p>
       </details>
     </section>
-
     <section id="reference">
-      <div class="section-head"><span class="section-number">06</span><h2>Everything you can call</h2></div>
+      <div class="section-head"><span class="section-number">SUPPLEMENT · 06</span><h2>Everything you can call</h2></div>
       <p class="lead">All paths are relative to your API address. Send the bearer token on every call except <code>/health</code>; metrics authentication is configurable.</p>
       <div class="table-wrap"><table class="endpoint-table"><thead><tr><th scope="col">Method + path</th><th scope="col">Send</th><th scope="col">Get back</th></tr></thead><tbody>
         <tr><td><span class="method">POST</span> <a href="#ocr"><code>/ocr</code></a></td><td>Multipart <code>file</code></td><td>Text / Markdown JSON</td></tr>
@@ -475,9 +492,14 @@ curl --fail-with-body "$base/v1/document-jobs" \
       </details>
       <p class="small">Use the table above to find an API call, then copy its request example. This service does not expose Swagger, ReDoc, or an OpenAPI URL.</p>
     </section>
-
+      <details><summary>Can I use the API from a browser or another computer?</summary>
+        <p>Yes. Call the API from your application using the public HTTPS address and your access token. Browser access needs the operator to allow your page’s origin with <code>OCR_CORS_ORIGINS</code>. CORS is off by default. Command-line and Python requests do not need CORS.</p>
+        <p>Use <code>https://pravdokapi.jerteh.rs</code> as the API address. When sending files with JavaScript <code>fetch</code> and <code>FormData</code>, add the authorization header and let the browser set <code>Content-Type</code> automatically.</p>
+      </details>
+    </details>
     <section id="help">
-      <div class="section-head"><span class="section-number">07</span><h2>A few things that help</h2></div>
+      <div class="section-head"><span class="section-number">HELP</span><h2>A few things that help</h2></div>
+      <p class="note">Troubleshooting: include the <code>X-OCR-Request-ID</code> response header when reporting an API error. It links your request to server diagnostics. Never share your bearer token. The authenticated <code>/status</code> response also includes diagnostic log-writer health.</p>
       <div class="help-grid">
         <div class="help-item"><strong>401 · Check the token</strong><p>Use <code>Authorization: Bearer …</code> with the token for this server. Keep it in the header, not the URL.</p></div>
         <div class="help-item"><strong>400 / 422 · Check the request</strong><p>Check field names, JSON types, language direction, and file format. Read the response’s <code>detail</code> message.</p></div>
@@ -486,16 +508,13 @@ curl --fail-with-body "$base/v1/document-jobs" \
         <div class="help-item"><strong>502 / 504 · A stage did not finish</strong><p>Read <code>detail</code>. The model/converter may have failed or timed out. Try a smaller input; use jobs to track longer work.</p></div>
         <div class="help-item"><strong>404 / 409 · Check the job</strong><p>The job or artifact may have expired, or the action conflicts with its state. Cancel a running job, then wait before deleting it.</p></div>
       </div>
-      <details><summary>Can I use the API from a browser or another computer?</summary>
-        <p>Yes. Call the API from your application using the public HTTPS address and your access token. Browser access needs the operator to allow your page’s origin with <code>OCR_CORS_ORIGINS</code>. CORS is off by default. Command-line and Python requests do not need CORS.</p>
-        <p>Use <code>https://pravdokapi.jerteh.rs</code> as the API address. When sending files with JavaScript <code>fetch</code> and <code>FormData</code>, add the authorization header and let the browser set <code>Content-Type</code> automatically.</p>
-      </details>
+
       <details><summary>What should I check in the result?</summary>
         <p>Review OCR text for recognition errors and translations for meaning. Structured documents and rendered output include warnings; a successful response does not mean every region translated or fit on the page. Use the original document alongside the output when reviewing.</p>
-        <p>For jobs, read <code>warning_count</code> and the artifact list. For direct rendering, read <code>X-Document-Status</code> and <code>X-Document-Warnings</code>. Ask for a render bundle when you need diagnostics.</p>
+        <p>Read <code>warning_count</code>, the artifact list and <code>word-diagnostics.json</code> when available. Review the original scan, Serbian Word and English Word together.</p>
       </details>
     </section>
-    <footer><span>OCR API · Practical user guide · JSON document schema 1.0</span><div><a href="#reference">API call reference</a><a href="#start">Connection setup ↗</a><a href="#main">Back to top ↑</a></div></footer>
+    <footer><span>OCR API · Customer Word workflows · Supplementary API reference</span><div><a href="#reference">API call reference</a><a href="#supplementary">Supplementary tools</a><a href="#main">Back to top ↑</a></div></footer>
     <noscript><p class="note">Enable JavaScript to switch and copy request examples. The endpoint table and saved results remain readable without JavaScript.</p></noscript>
     <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
   </main>
@@ -545,6 +564,36 @@ const API_GUIDE_EXAMPLES = {
     "powershell": "$translation = Get-Content -Raw -Encoding UTF8 translation-response.json | ConvertFrom-Json\n$path = Join-Path $PWD \"target-layer.json\"\n$json = $translation.target_layer | ConvertTo-Json -Depth 100\n[IO.File]::WriteAllText($path, $json, [Text.UTF8Encoding]::new($false))\n\n$curlArgs = @(\n    \"--fail-with-body\", \"--silent\", \"--show-error\"\n    \"$base/v1/documents/render\"\n    \"-H\", \"Authorization: Bearer $env:OCR_API_TOKEN\"\n    \"-F\", \"document_json=<document.json\"\n    \"-F\", \"layer_id=english\"\n    \"-F\", \"layer_json=<target-layer.json\"\n    \"-F\", \"source=@form.pdf;type=application/pdf\"\n    \"-F\", \"render_mode=auto\"\n    \"-F\", \"response_format=pdf\"\n    \"-D\", \"render-headers.txt\"\n    \"-o\", \"english.pdf\"\n)\n& curl.exe @curlArgs\nif ($LASTEXITCODE -ne 0) { throw \"Rendering failed.\" }\nGet-Content render-headers.txt | Select-String \"X-Document-(Status|Warnings)\"\nWrite-Host \"Saved english.pdf.\"",
     "bash": "python3 - <<'PY'\nimport json\nfrom pathlib import Path\nresult = json.loads(Path(\"translation-response.json\").read_text(encoding=\"utf-8\"))\nPath(\"target-layer.json\").write_text(json.dumps(result[\"target_layer\"]), encoding=\"utf-8\")\nPY\n\ncurl --fail-with-body --silent --show-error \"$base/v1/documents/render\" \\\n  -H \"Authorization: Bearer $OCR_API_TOKEN\" \\\n  -F \"document_json=<document.json\" \\\n  -F \"layer_id=english\" \\\n  -F \"layer_json=<target-layer.json\" \\\n  -F \"source=@form.pdf;type=application/pdf\" \\\n  -F \"render_mode=auto\" \\\n  -F \"response_format=pdf\" \\\n  -D render-headers.txt \\\n  -o english.pdf\n\n# Inspect X-Document-Status and X-Document-Warnings.\ncat render-headers.txt",
     "python": "import json\nfrom pathlib import Path\n\ntranslation = json.loads(\n    Path(\"translation-response.json\").read_text(encoding=\"utf-8\")\n)\nwith open(\"form.pdf\", \"rb\") as source:\n    response = httpx.post(\n        f\"{BASE}/v1/documents/render\",\n        headers=headers,\n        data={\n            \"document_json\": Path(\"document.json\").read_text(encoding=\"utf-8\"),\n            \"layer_id\": \"english\",\n            \"layer_json\": json.dumps(translation[\"target_layer\"]),\n            \"render_mode\": \"auto\",\n            \"response_format\": \"pdf\",\n        },\n        files={\"source\": (\"form.pdf\", source, \"application/pdf\")},\n        timeout=900,\n    )\nresponse.raise_for_status()\nPath(\"english.pdf\").write_bytes(response.content)\nprint(\"Status:\", response.headers.get(\"X-Document-Status\"))\nprint(\"Warnings:\", response.headers.get(\"X-Document-Warnings\"))"
+  },
+  "wordOcr": {
+    "powershell": "$curlArgs = @(\n    \"--fail-with-body\", \"--silent\", \"--show-error\"\n    \"$base/v1/document-jobs\"\n    \"-H\", \"Authorization: Bearer $env:OCR_API_TOKEN\"\n    \"-F\", \"workflow=serbian_word\"\n    \"-F\", \"file=@form.pdf;type=application/pdf\"\n)\n$reply = & curl.exe @curlArgs\nif ($LASTEXITCODE -ne 0) { throw \"Job submission failed.\" }\n$job = ($reply -join [Environment]::NewLine) | ConvertFrom-Json\n$jobId = $job.job_id\n$jobId",
+    "bash": "curl --fail-with-body --silent --show-error \"$base/v1/document-jobs\" \\\n  -H \"Authorization: Bearer $OCR_API_TOKEN\" \\\n  -F \"workflow=serbian_word\" \\\n  -F \"file=@form.pdf;type=application/pdf\" \\\n  -o job.json\n\njob_id=$(python3 -c 'import json; print(json.load(open(\"job.json\", encoding=\"utf-8\"))[\"job_id\"])')\nprintf '%s\\n' \"$job_id\"",
+    "python": "with open('form.pdf', \"rb\") as source:\n    response = httpx.post(\n        f\"{BASE}/v1/document-jobs\", headers=headers,\n        files={\"file\": ('form.pdf', source, 'application/pdf')},\n        data={'workflow': 'serbian_word'}, timeout=60,\n    )\nresponse.raise_for_status()\njob_id = response.json()[\"job_id\"]\nprint(job_id)"
+  },
+  "wordEnglish": {
+    "powershell": "$curlArgs = @(\n    \"--fail-with-body\", \"--silent\", \"--show-error\"\n    \"$base/v1/document-jobs\"\n    \"-H\", \"Authorization: Bearer $env:OCR_API_TOKEN\"\n    \"-F\", \"workflow=serbian_word\"\n    \"-F\", \"file=@serbian.docx;type=application/vnd.openxmlformats-officedocument.wordprocessingml.document\"\n    \"-F\", \"target_language=en\"\n)\n$reply = & curl.exe @curlArgs\nif ($LASTEXITCODE -ne 0) { throw \"Job submission failed.\" }\n$job = ($reply -join [Environment]::NewLine) | ConvertFrom-Json\n$jobId = $job.job_id\n$jobId",
+    "bash": "curl --fail-with-body --silent --show-error \"$base/v1/document-jobs\" \\\n  -H \"Authorization: Bearer $OCR_API_TOKEN\" \\\n  -F \"workflow=serbian_word\" \\\n  -F \"file=@serbian.docx;type=application/vnd.openxmlformats-officedocument.wordprocessingml.document\" \\\n  -F \"target_language=en\" \\\n  -o job.json\n\njob_id=$(python3 -c 'import json; print(json.load(open(\"job.json\", encoding=\"utf-8\"))[\"job_id\"])')\nprintf '%s\\n' \"$job_id\"",
+    "python": "with open('serbian.docx', \"rb\") as source:\n    response = httpx.post(\n        f\"{BASE}/v1/document-jobs\", headers=headers,\n        files={\"file\": ('serbian.docx', source, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')},\n        data={'workflow': 'serbian_word', 'target_language': 'en'}, timeout=60,\n    )\nresponse.raise_for_status()\njob_id = response.json()[\"job_id\"]\nprint(job_id)"
+  },
+  "wordImages": {
+    "powershell": "$curlArgs = @(\n    \"--fail-with-body\", \"--silent\", \"--show-error\"\n    \"$base/v1/document-jobs\"\n    \"-H\", \"Authorization: Bearer $env:OCR_API_TOKEN\"\n    \"-F\", \"workflow=serbian_word\"\n    \"-F\", \"files=@page-01.png;type=image/png\"\n    \"-F\", \"files=@page-02.jpg;type=image/jpeg\"\n)\n$reply = & curl.exe @curlArgs\nif ($LASTEXITCODE -ne 0) { throw \"Job submission failed.\" }\n$job = ($reply -join [Environment]::NewLine) | ConvertFrom-Json\n$jobId = $job.job_id\n$jobId",
+    "bash": "curl --fail-with-body --silent --show-error \"$base/v1/document-jobs\" \\\n  -H \"Authorization: Bearer $OCR_API_TOKEN\" \\\n  -F \"workflow=serbian_word\" \\\n  -F \"files=@page-01.png;type=image/png\" \\\n  -F \"files=@page-02.jpg;type=image/jpeg\" \\\n  -o job.json\n\njob_id=$(python3 -c 'import json; print(json.load(open(\"job.json\", encoding=\"utf-8\"))[\"job_id\"])')\nprintf '%s\\n' \"$job_id\"",
+    "python": "from contextlib import ExitStack\nfrom pathlib import Path\n\npages = [(\"page-01.png\", \"image/png\"), (\"page-02.jpg\", \"image/jpeg\")]\nwith ExitStack() as stack:\n    files = [(\"files\", (Path(name).name, stack.enter_context(open(name, \"rb\")), mime))\n             for name, mime in pages]\n    response = httpx.post(f\"{BASE}/v1/document-jobs\", headers=headers,\n                          data={\"workflow\": \"serbian_word\"}, files=files, timeout=60)\nresponse.raise_for_status()\njob_id = response.json()[\"job_id\"]\nprint(job_id)"
+  },
+  "wordPoll": {
+    "powershell": "$deadline = [DateTime]::UtcNow.AddMinutes(15)\n$terminal = @(\"completed\", \"completed_with_warnings\", \"failed\", \"cancelled\", \"expired\")\ndo {\n    $job = Invoke-RestMethod \"$base/v1/document-jobs/$jobId\" `\n        -Headers $headers -TimeoutSec 30\n    Write-Host \"$($job.state): $($job.progress)%\"\n    if ($job.state -in $terminal) { break }\n    Start-Sleep -Seconds 2\n} while ([DateTime]::UtcNow -lt $deadline)\n\nif ($job.state -notin $terminal) { throw \"Client wait timed out; keep $jobId and poll again.\" }\nWrite-Host \"State: $($job.state); error: $($job.error_code); warnings: $($job.warning_count)\"",
+    "bash": "# Uses Python 3's standard library; no jq or Python packages required.\npython3 - \"$base\" \"$job_id\" <<'PY'\nimport json, os, sys, time\nfrom pathlib import Path\nfrom urllib.request import Request, urlopen\n\nbase, job_id = sys.argv[1:]\nheaders = {\"Authorization\": \"Bearer \" + os.environ[\"OCR_API_TOKEN\"]}\ndeadline = time.monotonic() + 900\nterminal = {\"completed\", \"completed_with_warnings\", \"failed\", \"cancelled\", \"expired\"}\nwhile time.monotonic() < deadline:\n    request = Request(f\"{base}/v1/document-jobs/{job_id}\", headers=headers)\n    with urlopen(request, timeout=30) as response:\n        job = json.load(response)\n    print(f'{job[\"state\"]}: {job[\"progress\"]}%', flush=True)\n    if job[\"state\"] in terminal:\n        break\n    time.sleep(2)\nelse:\n    raise SystemExit(f\"Wait timed out. Poll job {job_id} again.\")\nPath(\"job-status.json\").write_text(json.dumps(job), encoding=\"utf-8\")\nprint(f'State: {job[\"state\"]}; error: {job[\"error_code\"]}; warnings: {job[\"warning_count\"]}')\nPY",
+    "python": "import time\n\ndeadline = time.monotonic() + 900\nterminal = {\"completed\", \"completed_with_warnings\", \"failed\", \"cancelled\", \"expired\"}\nwhile time.monotonic() < deadline:\n    response = httpx.get(\n        f\"{BASE}/v1/document-jobs/{job_id}\", headers=headers, timeout=30\n    )\n    response.raise_for_status()\n    job = response.json()\n    print(f'{job[\"state\"]}: {job[\"progress\"]}%')\n    if job[\"state\"] in terminal:\n        break\n    time.sleep(2)\nelse:\n    raise TimeoutError(f\"Wait timed out. Poll job {job_id} again.\")\n\nprint(f'State: {job[\"state\"]}; error: {job[\"error_code\"]}; warnings: {job[\"warning_count\"]}')"
+  },
+  "wordDownloadSr": {
+    "powershell": "$artifact = $job.artifacts |\n    Where-Object { $_.name -eq \"serbian.docx\" } |\n    Select-Object -First 1\nif (-not $artifact) { throw \"This job has no serbian.docx artifact.\" }\n$downloadUrl = [Uri]::new([Uri]($base + \"/\"), $artifact.download_url).AbsoluteUri\nInvoke-WebRequest $downloadUrl -UseBasicParsing -Headers $headers `\n    -OutFile serbian.docx -TimeoutSec 120\n\n$actualHash = (Get-FileHash serbian.docx -Algorithm SHA256).Hash.ToLowerInvariant()\nif ($actualHash -ne $artifact.sha256) { throw \"Download checksum mismatch.\" }\nWrite-Host \"Saved serbian.docx; checksum verified.\"",
+    "bash": "# job-status.json is the completed payload saved by the polling step.\ndownload_url=$(python3 - \"$base\" <<'PY'\nimport json, sys\nfrom urllib.parse import urljoin\njob = json.load(open(\"job-status.json\", encoding=\"utf-8\"))\nartifact = next(a for a in job[\"artifacts\"] if a[\"name\"] == \"serbian.docx\")\nprint(urljoin(sys.argv[1] + \"/\", artifact[\"download_url\"]))\nPY\n)\n\ncurl --fail-with-body --silent --show-error \"$download_url\" \\\n  -H \"Authorization: Bearer $OCR_API_TOKEN\" \\\n  -o serbian.docx\n\npython3 - <<'PY'\nimport hashlib, json\nfrom pathlib import Path\njob = json.load(open(\"job-status.json\", encoding=\"utf-8\"))\nartifact = next(a for a in job[\"artifacts\"] if a[\"name\"] == \"serbian.docx\")\nif hashlib.sha256(Path(\"serbian.docx\").read_bytes()).hexdigest() != artifact[\"sha256\"]:\n    raise SystemExit(\"Download checksum mismatch.\")\nprint(\"Saved serbian.docx; checksum verified.\")\nPY",
+    "python": "import hashlib\nfrom pathlib import Path\n\nartifact = next(\n    (a for a in job[\"artifacts\"] if a[\"name\"] == \"serbian.docx\"), None\n)\nif artifact is None:\n    raise RuntimeError(\"This job has no serbian.docx artifact.\")\ndownload_url = httpx.URL(BASE + \"/\").join(artifact[\"download_url\"])\nresponse = httpx.get(download_url, headers=headers, timeout=120)\nresponse.raise_for_status()\nif hashlib.sha256(response.content).hexdigest() != artifact[\"sha256\"]:\n    raise RuntimeError(\"Download checksum mismatch.\")\nPath(\"serbian.docx\").write_bytes(response.content)\nprint(\"Saved serbian.docx; checksum verified.\")"
+  },
+  "wordDownloadEn": {
+    "powershell": "$artifact = $job.artifacts |\n    Where-Object { $_.name -eq \"english.docx\" } |\n    Select-Object -First 1\nif (-not $artifact) { throw \"This job has no english.docx artifact.\" }\n$downloadUrl = [Uri]::new([Uri]($base + \"/\"), $artifact.download_url).AbsoluteUri\nInvoke-WebRequest $downloadUrl -UseBasicParsing -Headers $headers `\n    -OutFile english.docx -TimeoutSec 120\n\n$actualHash = (Get-FileHash english.docx -Algorithm SHA256).Hash.ToLowerInvariant()\nif ($actualHash -ne $artifact.sha256) { throw \"Download checksum mismatch.\" }\nWrite-Host \"Saved english.docx; checksum verified.\"",
+    "bash": "# job-status.json is the completed payload saved by the polling step.\ndownload_url=$(python3 - \"$base\" <<'PY'\nimport json, sys\nfrom urllib.parse import urljoin\njob = json.load(open(\"job-status.json\", encoding=\"utf-8\"))\nartifact = next(a for a in job[\"artifacts\"] if a[\"name\"] == \"english.docx\")\nprint(urljoin(sys.argv[1] + \"/\", artifact[\"download_url\"]))\nPY\n)\n\ncurl --fail-with-body --silent --show-error \"$download_url\" \\\n  -H \"Authorization: Bearer $OCR_API_TOKEN\" \\\n  -o english.docx\n\npython3 - <<'PY'\nimport hashlib, json\nfrom pathlib import Path\njob = json.load(open(\"job-status.json\", encoding=\"utf-8\"))\nartifact = next(a for a in job[\"artifacts\"] if a[\"name\"] == \"english.docx\")\nif hashlib.sha256(Path(\"english.docx\").read_bytes()).hexdigest() != artifact[\"sha256\"]:\n    raise SystemExit(\"Download checksum mismatch.\")\nprint(\"Saved english.docx; checksum verified.\")\nPY",
+    "python": "import hashlib\nfrom pathlib import Path\n\nartifact = next(\n    (a for a in job[\"artifacts\"] if a[\"name\"] == \"english.docx\"), None\n)\nif artifact is None:\n    raise RuntimeError(\"This job has no english.docx artifact.\")\ndownload_url = httpx.URL(BASE + \"/\").join(artifact[\"download_url\"])\nresponse = httpx.get(download_url, headers=headers, timeout=120)\nresponse.raise_for_status()\nif hashlib.sha256(response.content).hexdigest() != artifact[\"sha256\"]:\n    raise RuntimeError(\"Download checksum mismatch.\")\nPath(\"english.docx\").write_bytes(response.content)\nprint(\"Saved english.docx; checksum verified.\")"
   }
 };
 
@@ -558,6 +607,11 @@ const API_GUIDE_EXAMPLES = {
       bash:"Run this setup once, then use the recipes in the same Bash session. Examples use curl and Python 3 to read JSON; no extra Python packages are needed.",
       python:"Install httpx (python -m pip install httpx) and set OCR_API_TOKEN in your environment first. Run setup and a recipe in the same Python session or script."
     };
+    function revealAnchor() {
+      let id; try { id=decodeURIComponent(location.hash.slice(1)); } catch { return; }
+      for(let node=document.getElementById(id);node;node=node.parentElement) if(node.tagName==='DETAILS') node.open=true;
+    }
+    addEventListener('hashchange',revealAnchor); revealAnchor();
     let language = "powershell";
     const extras = {
       status:{method:"GET",path:"/status",description:"Inspect the configured models, queue, and current runtime."},
@@ -628,7 +682,9 @@ const API_GUIDE_EXAMPLES = {
     function revealAnchor() {
       const id=decodeURIComponent(location.hash.slice(1));
       const target=document.getElementById(id);
-      if(target?.tagName==="DETAILS") target.open=true;
+      for(let node=target;node;node=node.parentElement) {
+        if(node.tagName==="DETAILS") node.open=true;
+      }
     }
     window.addEventListener("hashchange",revealAnchor);
     if ("IntersectionObserver" in window) {
